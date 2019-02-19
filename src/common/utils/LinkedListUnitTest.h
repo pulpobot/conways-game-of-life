@@ -10,19 +10,31 @@
 #include <iostream>
 #include <string>
 #include "Logger.h"
-
-class SimpleClass
-{
-public:
-    int x;
-
-    SimpleClass(int n) : x{n} {};
-
-    ~SimpleClass() {};
-};
+#include "UnitTestClass.h"
 
 class LinkedListUnitTest
 {
+
+private:
+    void CheckResults(std::string &expectedResult, std::string &result)
+    {
+        Logger::Debug("Expected result: " + expectedResult);
+        Logger::Debug("Test result: " + result);
+
+        if (expectedResult == result)
+        {
+            Logger::Debug("Success");
+        }
+        else
+        {
+            Logger::Error("Failure");
+            throw "Unit Test for LinkedList failed, see logs for details";
+        }
+
+        Logger::Debug("********");
+
+    }
+
 public:
     //TODO:: Rewrite as a unit test
     LinkedListUnitTest()
@@ -30,14 +42,14 @@ public:
         std::string expectedResult = "";
         std::string result = "";
 
-        Logger::Warning("Running Linked List Stress Test");
+        Logger::Warning("Running Linked List Unit Test");
 
         //add first
         Logger::Debug("Add a single object first");
 
-        LinkedList<SimpleClass> list;
-        SimpleClass a(1);
-        list.AddFirst(a);
+        LinkedList<UnitTestClass> list;
+        std::unique_ptr<UnitTestClass> a(new UnitTestClass(1));
+        list.AddFirst(a.get());
 
         auto *curNode = list.GetFirst();
         result = std::to_string(curNode->value->x);
@@ -50,7 +62,7 @@ public:
         Logger::Debug("Add a single object last");
         result = "";
 
-        list.AddLast(a);
+        list.AddLast(a.get());
 
         curNode = list.GetLast();
         result = std::to_string(curNode->value->x);
@@ -63,12 +75,11 @@ public:
 
         //add in sequence first
         list.Clear();
-        Logger::Debug("Add a multiple object with first");
+        Logger::Debug("Add multiple objects with first");
         result = "";
         for (int i = 1; i <= 10; ++i)
         {
-            SimpleClass *b = new SimpleClass(i);
-            list.AddFirst(*b);
+            list.AddFirst(new UnitTestClass(i));
         }
 
         curNode = list.GetFirst();
@@ -94,13 +105,12 @@ public:
 
         //add in sequence last
         list.Clear();
-        Logger::Debug("Add a multiple object with last");
+        Logger::Debug("Add multiple objects with last");
 
         result = "";
         for (int i = 1; i <= 10; ++i)
         {
-            SimpleClass *b = new SimpleClass(i);
-            list.AddLast(*b);
+            list.AddLast(new UnitTestClass(i));
         }
 
         curNode = list.GetFirst();
@@ -129,12 +139,11 @@ public:
         Logger::Debug("Add a multiple object with after");
         result = "";
 
-        auto nodeRef = list.AddFirst(a);
+        auto nodeRef = list.AddFirst(a.get());
 
         for (int i = 2; i <= 10; ++i)
         {
-            SimpleClass *c = new SimpleClass(i);
-            nodeRef = list.AddAfter(nodeRef, *c);
+            nodeRef = list.AddAfter(nodeRef, new UnitTestClass(i));
         }
 
         curNode = list.GetFirst();
@@ -152,12 +161,11 @@ public:
         Logger::Debug("Add a multiple object with before");
         result = "";
 
-        nodeRef = list.AddFirst(a);
+        nodeRef = list.AddFirst(a.get());
 
         for (int i = 2; i <= 10; ++i)
         {
-            SimpleClass *c = new SimpleClass(i);
-            nodeRef = list.AddBefore(nodeRef, *c);
+            nodeRef = list.AddBefore(nodeRef, new UnitTestClass(i));
         }
 
         curNode = list.GetFirst();
@@ -174,11 +182,11 @@ public:
         list.Clear();
         Logger::Debug("Add an object in between two with After");
         result = "";
-        nodeRef = list.AddFirst(a);
-        SimpleClass b(2);
-        list.AddAfter(nodeRef, b);
-        SimpleClass c(3);
-        list.AddAfter(nodeRef, c);
+        nodeRef = list.AddFirst(a.get());
+        std::unique_ptr<UnitTestClass> b(new UnitTestClass(2));
+        list.AddAfter(nodeRef, b.get());
+        std::unique_ptr<UnitTestClass> c(new UnitTestClass(3));
+        list.AddAfter(nodeRef, c.get());
         expectedResult = "132";
         curNode = list.GetFirst();
         while (nullptr != curNode)
@@ -192,9 +200,9 @@ public:
         list.Clear();
         Logger::Debug("Add an object in between two with Before");
         result = "";
-        nodeRef = list.AddLast(a);
-        list.AddBefore(nodeRef, b);
-        list.AddBefore(nodeRef, c);
+        nodeRef = list.AddLast(a.get());
+        list.AddBefore(nodeRef, b.get());
+        list.AddBefore(nodeRef, c.get());
         expectedResult = "231";
         curNode = list.GetFirst();
         while (nullptr != curNode)
@@ -208,9 +216,9 @@ public:
         list.Clear();
         Logger::Debug("Remove first - using Add last");
         result = "";
-        list.AddLast(a);
-        list.AddLast(b);
-        list.AddLast(c);
+        list.AddLast(a.get());
+        list.AddLast(b.get());
+        list.AddLast(c.get());
         list.RemoveFirst();
         expectedResult = "23";
         curNode = list.GetFirst();
@@ -224,9 +232,9 @@ public:
         list.Clear();
         Logger::Debug("Remove first - using add first");
         result = "";
-        list.AddFirst(a);
-        list.AddFirst(b);
-        list.AddFirst(c);
+        list.AddFirst(a.get());
+        list.AddFirst(b.get());
+        list.AddFirst(c.get());
         list.RemoveFirst();
         expectedResult = "21";
         curNode = list.GetFirst();
@@ -241,9 +249,9 @@ public:
         list.Clear();
         result = "";
         Logger::Debug("Remove last - using Add last");
-        list.AddLast(a);
-        list.AddLast(b);
-        list.AddLast(c);
+        list.AddLast(a.get());
+        list.AddLast(b.get());
+        list.AddLast(c.get());
         list.RemoveLast();
         expectedResult = "12";
         curNode = list.GetFirst();
@@ -257,9 +265,9 @@ public:
         list.Clear();
         result = "";
         Logger::Debug("Remove last - using Add first");
-        list.AddFirst(a);
-        list.AddFirst(b);
-        list.AddFirst(c);
+        list.AddFirst(a.get());
+        list.AddFirst(b.get());
+        list.AddFirst(c.get());
         list.RemoveLast();
         expectedResult = "32";
         curNode = list.GetFirst();
@@ -274,9 +282,9 @@ public:
         list.Clear();
         result = "";
         Logger::Debug("Remove specific - first");
-        nodeRef = list.AddFirst(a);
-        list.AddLast(b);
-        list.AddLast(c);
+        nodeRef = list.AddFirst(a.get());
+        list.AddLast(b.get());
+        list.AddLast(c.get());
         list.Remove(nodeRef);
         expectedResult = "23";
         curNode = list.GetFirst();
@@ -290,9 +298,9 @@ public:
         list.Clear();
         result = "";
         Logger::Debug("Remove specific - mid");
-        list.AddFirst(a);
-        nodeRef = list.AddLast(b);
-        list.AddLast(c);
+        list.AddFirst(a.get());
+        nodeRef = list.AddLast(b.get());
+        list.AddLast(c.get());
         list.Remove(nodeRef);
         expectedResult = "13";
         curNode = list.GetFirst();
@@ -306,9 +314,9 @@ public:
         list.Clear();
         result = "";
         Logger::Debug("Remove specific - last");
-        list.AddFirst(a);
-        list.AddLast(b);
-        nodeRef = list.AddLast(c);
+        list.AddFirst(a.get());
+        list.AddLast(b.get());
+        nodeRef = list.AddLast(c.get());
         list.Remove(nodeRef);
         expectedResult = "12";
         curNode = list.GetFirst();
@@ -323,25 +331,6 @@ public:
         list.Destroy();
     }
 
-private:
-    void CheckResults(std::string &expectedResult, std::string &result)
-    {
-        Logger::Debug("Expected result: " + expectedResult);
-        Logger::Debug("Test result: " + result);
-
-        if (expectedResult == result)
-        {
-            Logger::Debug("Success");
-        }
-        else
-        {
-            Logger::Error("Failure");
-            throw "Unit Test for LinkedList failed, see logs for details";
-        }
-
-        Logger::Debug("********");
-
-    }
 };
 
 

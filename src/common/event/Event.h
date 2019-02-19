@@ -8,7 +8,7 @@
 class Event
 {
 public:
-    int GetEventType();
+    size_t Hash();
 };
 
 #endif //PULPOBOT_EVENT_H

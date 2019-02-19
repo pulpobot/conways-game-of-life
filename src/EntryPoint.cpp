@@ -5,6 +5,9 @@
 #include "SFML/Graphics.hpp"
 #include "common/tools/FPSDebugWindow.h"
 #include "common/utils/LinkedList.h"
+#include "common/event/Event.h"
+#include "common/utils/LinkedListUnitTest.h"
+#include "common/utils/PendingListUnitTest.h"
 
 int main()
 {
@@ -16,6 +19,7 @@ int main()
     ImGui::CreateContext();
     ImGui::SFML::Init(window);
 
+
 #if APPLE
     ImGui::GetIO().FontGlobalScale = 2;
 #endif
@@ -23,6 +27,18 @@ int main()
     window.resetGLStates(); // call it if you only draw ImGui. Otherwise not needed.
     sf::Clock deltaClock;
     bool showFPSWindow = true;
+
+    std::unique_ptr<Event> e(new Event);
+    std::unique_ptr<Event> f(new Event);
+    std::hash<Event *> eventHash;
+    size_t hash = eventHash(e.get());
+    Logger::Debug(std::to_string(hash));
+    hash = eventHash(f.get());
+    Logger::Debug(std::to_string(hash));
+
+
+    LinkedListUnitTest test;
+    PendingListUnitTest pendingListTest;
 
     while (window.isOpen())
     {
