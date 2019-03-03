@@ -5,10 +5,8 @@
 #ifndef PULPOBOT_PENDINGLIST_H
 #define PULPOBOT_PENDINGLIST_H
 
-#include <list>
-
 template<typename T>
-class PendingList : public std::vector<T>
+class PendingList : private std::vector<T>
 {
 private:
     size_t lockCounter = 0;
@@ -23,6 +21,11 @@ public:
         pendingRemoves.clear();
     }
 
+    ~PendingList()
+    {
+        this->Clear();
+    }
+
     void Add(T item)
     {
         if (lockCounter == 0)
@@ -34,11 +37,23 @@ public:
         pendingAdds.push_back(item);
     }
 
-    void Remove(T item)
+    void RemoveItem(T item)
     {
         if (lockCounter == 0)
         {
-            remove(item);
+            //find and remove
+            auto iter = this->begin();
+            while(iter != this->end())
+            {
+                if(*iter == item)
+                {
+                    iter = this->erase(iter);
+                }
+                else
+                {
+                    ++iter;
+                }
+            }
             return;
         }
 
@@ -47,24 +62,61 @@ public:
 
     void Lock()
     {
+        ++lockCounter;
+    }
+
+    void Unlock()
+    {
         if (--lockCounter)
         {
             return;
         }
 
         // fully unlocked, so resolve the pending adds/removes in the main list
-        push_back(pendingAdds);
-        remove(pendingRemoves);
+        this->insert(this->end(), pendingAdds.begin(), pendingAdds.end());
+        auto iter = pendingRemoves.begin();
+
+        while(iter != pendingRemoves.end())
+        {
+            RemoveItem(*iter);
+            ++iter;
+        }
 
         pendingAdds.clear();
         pendingRemoves.clear();
     }
 
-    void Unlock()
+    void Clear()
     {
-        ++lockCounter;
+        this->clear();
+        this->pendingRemoves.clear();
+        this->pendingAdds.clear();
     }
 
+    T Front()
+    {
+        if(this->size() > 0)
+        {
+            return this->front();
+        }
+
+        return nullptr;
+    }
+
+    T Last()
+    {
+        if(this->size() > 0)
+        {
+            return this->back();
+        }
+
+        return nullptr;
+    }
+
+    typename std::vector<T>::const_iterator Begin()
+    {
+        return this->begin();
+    }
 };
 
 

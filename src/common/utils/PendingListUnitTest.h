@@ -48,13 +48,89 @@ public:
         std::unique_ptr<UnitTestClass> a(new UnitTestClass(1));
         list.Add(a.get());
 
-        auto *curNode = list[0];
+        auto curNode = list.Front();
         result = std::to_string(curNode->x);
 
         expectedResult = "1";
         CheckResults(expectedResult, result);
 
-        //TODO: ADD MORE TESTS
+        //remove first
+        result = "";
+        Logger::Debug("Remove a single object");
+        list.Clear();
+
+        list.Add(a.get());
+        curNode = list.Front();
+        list.RemoveItem(curNode);
+        curNode = list.Front();
+        if(nullptr != curNode)
+        {
+            result = std::to_string(curNode->x);
+        }
+
+        expectedResult = "";
+
+        CheckResults(expectedResult, result);
+
+        //add while locked
+        result = "";
+        Logger::Debug("Add an object while locked");
+        list.Clear();
+        list.Lock();
+        list.Add(a.get());
+        curNode = list.Front();
+        if(nullptr != curNode)
+        {
+            result = std::to_string(curNode->x);
+        }
+
+        expectedResult = "";
+
+        CheckResults(expectedResult, result);
+
+        //unlock and add pending
+        result = "";
+        Logger::Debug("Add a pending object");
+        list.Unlock();
+        curNode = list.Front();
+        if(nullptr != curNode)
+        {
+            result = std::to_string(curNode->x);
+        }
+
+        expectedResult = "1";
+
+        CheckResults(expectedResult, result);
+
+        //lock and remove
+        result = "";
+        Logger::Debug("Lock and try to remove");
+        list.Lock();
+        curNode = list.Front();
+        list.RemoveItem(curNode);
+        curNode = list.Front();
+        if(nullptr != curNode)
+        {
+            result = std::to_string(curNode->x);
+        }
+
+        expectedResult = "1";
+
+        CheckResults(expectedResult, result);
+
+        //unlock and remove pending
+        result = "";
+        Logger::Debug("Unlock and remove pending");
+        list.Unlock();
+        curNode = list.Front();
+        if(nullptr != curNode)
+        {
+            result = std::to_string(curNode->x);
+        }
+
+        expectedResult = "";
+
+        CheckResults(expectedResult, result);
 
     }
 };
