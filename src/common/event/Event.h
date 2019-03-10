@@ -8,7 +8,7 @@
 class Event
 {
 public:
-    size_t Hash();
+    virtual unsigned int eventType(){ return -1; };
 };
 
 #endif //PULPOBOT_EVENT_H

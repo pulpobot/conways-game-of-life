@@ -8,6 +8,10 @@
 #include "common/event/Event.h"
 #include "common/utils/LinkedListUnitTest.h"
 #include "common/utils/PendingListUnitTest.h"
+#include "common/event/EventSystemUnitTest.h"
+#include "common/event/EventSystem.h"
+#include "common/event/Listener.h"
+
 
 int main()
 {
@@ -28,18 +32,7 @@ int main()
     sf::Clock deltaClock;
     bool showFPSWindow = true;
 
-    std::unique_ptr<Event> e(new Event);
-    std::unique_ptr<Event> f(new Event);
-    std::hash<Event *> eventHash;
-    size_t hash = eventHash(e.get());
-    Logger::Debug(std::to_string(hash));
-    hash = eventHash(f.get());
-    Logger::Debug(std::to_string(hash));
-
-
-    LinkedListUnitTest test;
-    PendingListUnitTest pendingListTest;
-
+    EventSystemUnitTest eventSystemUnitTest;
     while (window.isOpen())
     {
         sf::Event windowEvent;

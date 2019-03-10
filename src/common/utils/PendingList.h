@@ -5,32 +5,28 @@
 #ifndef PULPOBOT_PENDINGLIST_H
 #define PULPOBOT_PENDINGLIST_H
 
+#include <vector>
+
 template<typename T>
-class PendingList : private std::vector<T>
+class PendingList
 {
 private:
     size_t lockCounter = 0;
+    std::vector<T> list;
     std::vector<T> pendingAdds;
     std::vector<T> pendingRemoves;
 
 public:
-    PendingList<T>()
-    {
-        //initialize inner pending lists
-        pendingAdds.clear();
-        pendingRemoves.clear();
-    }
-
     ~PendingList()
     {
-        this->Clear();
+        Clear();
     }
 
     void Add(T item)
     {
         if (lockCounter == 0)
         {
-            this->push_back(item);
+            list.push_back(item);
             return;
         }
 
@@ -42,12 +38,12 @@ public:
         if (lockCounter == 0)
         {
             //find and remove
-            auto iter = this->begin();
-            while(iter != this->end())
+            typename std::vector<T>::const_iterator iter = list.begin();
+            while (iter != list.end())
             {
-                if(*iter == item)
+                if ((*iter) == item)
                 {
-                    iter = this->erase(iter);
+                    iter = list.erase(iter);
                 }
                 else
                 {
@@ -73,10 +69,10 @@ public:
         }
 
         // fully unlocked, so resolve the pending adds/removes in the main list
-        this->insert(this->end(), pendingAdds.begin(), pendingAdds.end());
+        list.insert(list.end(), pendingAdds.begin(), pendingAdds.end());
         auto iter = pendingRemoves.begin();
 
-        while(iter != pendingRemoves.end())
+        while (iter != pendingRemoves.end())
         {
             RemoveItem(*iter);
             ++iter;
@@ -88,16 +84,16 @@ public:
 
     void Clear()
     {
-        this->clear();
-        this->pendingRemoves.clear();
-        this->pendingAdds.clear();
+        list.clear();
+        pendingRemoves.clear();
+        pendingAdds.clear();
     }
 
     T Front()
     {
-        if(this->size() > 0)
+        if (list.size() > 0)
         {
-            return this->front();
+            return list.front();
         }
 
         return nullptr;
@@ -105,9 +101,9 @@ public:
 
     T Last()
     {
-        if(this->size() > 0)
+        if (list.size() > 0)
         {
-            return this->back();
+            return list.back();
         }
 
         return nullptr;
@@ -115,7 +111,12 @@ public:
 
     typename std::vector<T>::const_iterator Begin()
     {
-        return this->begin();
+        return list.begin();
+    }
+
+    typename std::vector<T>::const_iterator End()
+    {
+        return list.end();
     }
 };
 
