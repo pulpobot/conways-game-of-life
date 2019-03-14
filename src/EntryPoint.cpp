@@ -9,6 +9,8 @@
 #include "common/event/common-events/CommonWindowEvents.h"
 #include "WindowEventHandler.h"
 #include "ImguiDebugWindowManager.h"
+#include "Board.h"
+#include "BoardRenderer.h"
 
 int main()
 {
@@ -24,6 +26,9 @@ int main()
     sf::Clock deltaClock;
 
     ImguiDebugWindowManager imguiDebugWindowManager(&window, &deltaClock);
+
+    Board board;
+    BoardRenderer boardRenderer(&board, &window);
 
     while (window.isOpen())
     {
@@ -45,7 +50,8 @@ int main()
 
         imguiDebugWindowManager.Update();
 
-        window.clear(sf::Color::Cyan);
+        window.clear(sf::Color::White);
+        boardRenderer.Render();
         imguiDebugWindowManager.Render();
         window.display();
     }

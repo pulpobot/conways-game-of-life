@@ -10,16 +10,21 @@
 class ImguiDebugWindowManager : public FunctionKeyPressedEvent::FunctionKeyPressedEventListener
 {
 private:
-    sf::RenderWindow * window;
-    sf::Clock * deltaClock;
+    sf::RenderWindow *window;
+    sf::Clock *deltaClock;
     bool showFPSDebugWindow = false;
 public:
     void ToggleShowFPSDebugWindow();
+
     void OnFunctionKeyPressed(std::shared_ptr<Event> event) override;
+
     void ProcessEvent(sf::Event &);
+
     void Update();
+
     void Render();
-    ImguiDebugWindowManager(sf::RenderWindow * window, sf::Clock * deltaClock);
+
+    ImguiDebugWindowManager(sf::RenderWindow *window, sf::Clock *deltaClock);
 };
 
 

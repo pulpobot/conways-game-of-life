@@ -5,14 +5,20 @@
 #ifndef CONWAYS_GAME_OF_LIFE_BOARD_H
 #define CONWAYS_GAME_OF_LIFE_BOARD_H
 
+#include <vector>
+#include "Cell.h"
 
 class Board
 {
 public:
-    Board();
+    Board(unsigned int boardWidth = DEFAULT_BOARD_WIDTH, unsigned int boardHeight = DEFAULT_BOARD_HEIGHT);
+    unsigned int boardWidth;
+    unsigned int boardHeight;
 
 private:
-    int size;
+    const static unsigned int DEFAULT_BOARD_WIDTH = 30;
+    const static unsigned int DEFAULT_BOARD_HEIGHT = 15;
+    std::vector<std::vector<Cell>> cells;
 };
 
 

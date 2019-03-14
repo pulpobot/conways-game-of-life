@@ -10,11 +10,11 @@
 #include "vendor/imgui/imgui-SFML.h"
 #include "common/tools/FPSDebugWindow.h"
 
-ImguiDebugWindowManager::ImguiDebugWindowManager(sf::RenderWindow * window, sf::Clock * deltaClock)
+ImguiDebugWindowManager::ImguiDebugWindowManager(sf::RenderWindow *window, sf::Clock *deltaClock)
 {
     this->window = window;
     this->deltaClock = deltaClock;
-    EventSystem::Instance().AddListener((FunctionKeyPressedEventListener * ) this);
+    EventSystem::Instance().AddListener((FunctionKeyPressedEventListener * )this);
     ImGui::CreateContext();
     ImGui::SFML::Init(*window);
 
@@ -38,7 +38,7 @@ void ImguiDebugWindowManager::ToggleShowFPSDebugWindow()
     showFPSDebugWindow = !showFPSDebugWindow;
 }
 
-void ImguiDebugWindowManager::ProcessEvent(sf::Event& windowEvent)
+void ImguiDebugWindowManager::ProcessEvent(sf::Event &windowEvent)
 {
     ImGui::SFML::ProcessEvent(windowEvent);
 }
