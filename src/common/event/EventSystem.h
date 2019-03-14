@@ -6,7 +6,6 @@
 #define PULPOBOT_EVENTSYSTEM_H
 
 #include "Event.h"
-#include "Listener.h"
 #include "../utils/Logger.h"
 #include <functional>
 #include <map>
@@ -15,6 +14,7 @@
 class EventSystem
 {
 public:
+    friend class Event;
     static EventSystem &Instance()
     {
         static EventSystem instance; // Guaranteed to be destroyed.
@@ -31,14 +31,14 @@ public:
      * @param eventType
      * @param listener
      */
-    void AddListener(unsigned int eventType, Listener *listener);
+    void AddListener(Event::Listener *listener);
 
     /**
      * Removes (if any) a listener to the type of event
      * @param eventType
      * @param listener
      */
-    void RemoveListener(unsigned int eventType, Listener *listener);
+    void RemoveListener(Event::Listener *listener);
 
     /**
      * Dispatches an event across all listeners, it sends the shared pointer as an argument
@@ -49,7 +49,7 @@ public:
 private:
     EventSystem() {}
 
-    std::map<unsigned int, PendingList<Listener *>> mapListeners;
+    std::map<unsigned int, PendingList<Event::Listener *>> mapListeners;
 };
 
 #endif //PULPOBOT_EVENTSYSTEM_H

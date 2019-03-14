@@ -2,8 +2,8 @@
 // Created by Santiago Alvarez Vargas on 2018-12-16.
 //
 
-#ifndef PULPOBOT_FPSDEBUGWINDOW_H
-#define PULPOBOT_FPSDEBUGWINDOW_H
+#ifndef PULPOBOT_FPS_DEBUG_WINDOW_H
+#define PULPOBOT_FPS_DEBUG_WINDOW_H
 
 #include <stddef.h> //NULL
 #include <iostream>
@@ -29,4 +29,4 @@ namespace pulpobot
     }
 }
 
-#endif //PULPOBOT_FPSDEBUGWINDOW_H
+#endif //PULPOBOT_FPS_DEBUG_WINDOW_H

@@ -3,15 +3,12 @@
 
 #include <iostream>
 #include "SFML/Graphics.hpp"
-#include "common/tools/FPSDebugWindow.h"
 #include "common/utils/LinkedList.h"
 #include "common/event/Event.h"
-#include "common/utils/LinkedListUnitTest.h"
-#include "common/utils/PendingListUnitTest.h"
-#include "common/event/EventSystemUnitTest.h"
 #include "common/event/EventSystem.h"
-#include "common/event/Listener.h"
-
+#include "common/event/common-events/CommonWindowEvents.h"
+#include "WindowEventHandler.h"
+#include "ImguiDebugWindowManager.h"
 
 int main()
 {
@@ -20,46 +17,36 @@ int main()
     sf::RenderWindow window(sf::VideoMode(1280, 720, desktop.bitsPerPixel), "Conway's Game Of Life",
                             sf::Style::Titlebar | sf::Style::Close);
     window.setFramerateLimit(60);
-    ImGui::CreateContext();
-    ImGui::SFML::Init(window);
 
-
-#if APPLE
-    ImGui::GetIO().FontGlobalScale = 2;
-#endif
+    WindowEventHandler windowEventHandler(&window);
 
     window.resetGLStates(); // call it if you only draw ImGui. Otherwise not needed.
     sf::Clock deltaClock;
-    bool showFPSWindow = true;
 
-    EventSystemUnitTest eventSystemUnitTest;
+    ImguiDebugWindowManager imguiDebugWindowManager(&window, &deltaClock);
+
     while (window.isOpen())
     {
         sf::Event windowEvent;
         while (window.pollEvent(windowEvent))
         {
-            ImGui::SFML::ProcessEvent(windowEvent);
+            imguiDebugWindowManager.ProcessEvent(windowEvent);
             switch (windowEvent.type)
             {
                 case sf::Event::Closed:
-                    window.close();
+                    EventSystem::Instance().Dispatch(std::shared_ptr<WindowCloseEvent>(new WindowCloseEvent()));
                     break;
                 case sf::Event::KeyPressed:
-                    if (sf::Keyboard::F1 == windowEvent.key.code)
-                    {
-                        showFPSWindow = !showFPSWindow;
-                    }
+                    EventSystem::Instance().Dispatch(std::shared_ptr<KeyPressedEvent>(new KeyPressedEvent(windowEvent.key.code)));
                 default:
                     break;
             }
         }
 
-        ImGui::SFML::Update(window, deltaClock.restart());
-        pulpobot::FPSDebugWindow(&showFPSWindow);
-        ImGui::ShowDemoWindow();
+        imguiDebugWindowManager.Update();
 
         window.clear(sf::Color::Cyan);
-        ImGui::SFML::Render(window);
+        imguiDebugWindowManager.Render();
         window.display();
     }
 
