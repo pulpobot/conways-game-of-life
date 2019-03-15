@@ -20,9 +20,9 @@ private:
     LinkedList<CellRenderer> cellRenderers; //TODO: Pool these
 
     bool isLandscape = true;
-    unsigned int cellSize;
-    unsigned int verticalBorder = 0;
-    unsigned int horizontalBorder = 0;
+    int cellSize;
+    int lateralBorder = 0;
+    int longitudinalBorder = 0;
 
     void CalculateCellSize();
 public:

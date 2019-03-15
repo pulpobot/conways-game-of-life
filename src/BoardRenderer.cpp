@@ -3,6 +3,7 @@
 //
 
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <random>
 #include "BoardRenderer.h"
 #include "common/utils/Logger.h"
 
@@ -25,7 +26,7 @@ BoardRenderer::BoardRenderer(Board *board, sf::RenderWindow *window)
 
 void BoardRenderer::Render()
 {
-    LinkedList<CellRenderer>::LinkedListNode * currentCellRenderer = cellRenderers.GetFirst();
+    LinkedList<CellRenderer>::LinkedListNode *currentCellRenderer = cellRenderers.GetFirst();
     while (nullptr != currentCellRenderer)
     {
         currentCellRenderer->value->Draw(window);
@@ -38,39 +39,67 @@ void BoardRenderer::CalculateCellSize()
     // The board is generated based on whenever the device is on portrait or landscape mode
     // We ensure we accommodate the amount of cells expected in the board
 
-    cellSize = (window->getSize().x / (double) board->boardWidth);
+    //Calculate the size of a cell based on the width of the screen, and consider the fact that outlines between cells overlap
+    cellSize = ((window->getSize().x + (board->columns - 1) * CellRenderer::OUTLINE_THICKNESS)) /
+               (double) (board->columns);
 
-    //TODO:Consider cell outline thickness
-    verticalBorder = (window->getSize().x - cellSize * board->boardWidth) / 2;
+    int boardWidth = ((cellSize - CellRenderer::OUTLINE_THICKNESS) * board->columns) + CellRenderer::OUTLINE_THICKNESS;
+    int boardHeight = ((cellSize - CellRenderer::OUTLINE_THICKNESS) * board->rows) + CellRenderer::OUTLINE_THICKNESS;
+    //leave some lateral and longitudinal borders so we center the cells if the don't occupy the entire space
+    lateralBorder = (window->getSize().x - (boardWidth)) / 2;
+    longitudinalBorder = (window->getSize().y - (boardHeight)) / 2;
 
-    horizontalBorder = (window->getSize().y - cellSize * board->boardHeight) / 2;
-    unsigned int boardHeightPixels = cellSize * board->boardHeight;
-    if(window->getSize().y < boardHeightPixels)
+    //if the amount of columns can't fit in the width of the screen, recalculate based on the rows and height instead
+    if (cellSize - CellRenderer::OUTLINE_THICKNESS * 2 <= 0 || window->getSize().y < boardHeight)
     {
-        //TODO: Rescale cells to fit, probably it means increasing black borders
-        horizontalBorder = 0;
-    }
-    else
-    {
-    }
+        Logger::Debug("ain't gonna fit! Resizing with height instead");
+        cellSize =
+                ((window->getSize().y + (board->rows - 1) * CellRenderer::OUTLINE_THICKNESS)) / (double) (board->rows);
+        boardWidth = ((cellSize - CellRenderer::OUTLINE_THICKNESS) * board->columns) + CellRenderer::OUTLINE_THICKNESS;
+        boardHeight = ((cellSize - CellRenderer::OUTLINE_THICKNESS) * board->rows) + CellRenderer::OUTLINE_THICKNESS;
+        lateralBorder = (window->getSize().x - (boardWidth)) / 2;
+        longitudinalBorder = (window->getSize().y - (boardHeight)) / 2;
 
-    cellRenderers.Clear();
-    for (int row = 0; row < board->boardHeight; ++row)
-    {
-        for (int col = 0; col < board->boardWidth; ++col)
+        //something went really wrong with that board configuration if this passes
+        if (cellSize - CellRenderer::OUTLINE_THICKNESS * 2 <= 0 || window->getSize().x < boardWidth)
         {
-            Logger::Debug("Cell at: " + std::to_string( horizontalBorder + col * cellSize));
-
-            CellRenderer * cellRenderer = new CellRenderer();
-            //TODO: Consider cell outline thickness
-            cellRenderer->Update(cellSize, verticalBorder + col * cellSize + (col > 0 ? 1: 0), horizontalBorder + row * cellSize + (row > 0 ? 1: 0));
-            cellRenderers.AddFirst(cellRenderer);
+            Logger::Error("Can't fit that many cells");
+            throw "Can't fit that many cells";
         }
     }
 
-    Logger::Debug("Cell Size: " + std::to_string(cellSize));
-    Logger::Debug("Vertical Boarder: " + std::to_string(verticalBorder));
-    Logger::Debug("Horizontal Border: " + std::to_string(horizontalBorder));
+    cellRenderers.Clear();
+
+    for (int row = 0; row < board->rows; ++row)
+    {
+        for (int col = 0; col < board->columns; ++col)
+        {
+            CellRenderer *cellRenderer = new CellRenderer();
+            //size border + size of the cell + thickness if col 0 or reduce the thickness if > 0, so the outlines overlap
+            cellRenderer->Update
+                    (cellSize,
+                     lateralBorder + col * cellSize - ((col - 1) * CellRenderer::OUTLINE_THICKNESS),
+                     longitudinalBorder + row * cellSize - ((row - 1) * CellRenderer::OUTLINE_THICKNESS));
+            cellRenderers.AddLast(cellRenderer);
+        }
+    }
+
+    std::mt19937 m(std::time(NULL));
+    std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+
+    LinkedList<CellRenderer>::LinkedListNode * node = cellRenderers.GetFirst();
+    while (nullptr != node)
+    {
+        if(dist(m) > 0.66)
+        {
+            node->value->SetAlive();
+        }
+        else
+        {
+            node->value->SetDead();
+        }
+        node = node->next;
+    }
 }
 
 

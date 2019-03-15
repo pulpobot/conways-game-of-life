@@ -11,13 +11,13 @@
 class Board
 {
 public:
-    Board(unsigned int boardWidth = DEFAULT_BOARD_WIDTH, unsigned int boardHeight = DEFAULT_BOARD_HEIGHT);
-    unsigned int boardWidth;
-    unsigned int boardHeight;
+    Board(unsigned int columns = DEFAULT_BOARD_WIDTH, unsigned int rows = DEFAULT_BOARD_HEIGHT);
+    unsigned int columns;
+    unsigned int rows;
 
 private:
-    const static unsigned int DEFAULT_BOARD_WIDTH = 30;
-    const static unsigned int DEFAULT_BOARD_HEIGHT = 15;
+    const static unsigned int DEFAULT_BOARD_WIDTH = 80;
+    const static unsigned int DEFAULT_BOARD_HEIGHT = 45;
     std::vector<std::vector<Cell>> cells;
 };
 

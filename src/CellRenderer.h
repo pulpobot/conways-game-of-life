@@ -11,15 +11,20 @@
 class CellRenderer
 {
 private:
-    inline const static sf::Color DEFAULT_CELL_BORDER_COLOR = sf::Color::Black;
-    inline const static sf::Color DEFAULT_CELL_FILL_COLOR = sf::Color::White;
-    const static unsigned int DEFAULT_CELL_OUTLINE_THICKNESS = 3;
+    inline const static sf::Color DEFAULT_CELL_FILL_ALIVE_COLOR = sf::Color(249, 223, 91);
+    inline const static sf::Color DEFAULT_CELL_BORDER_ALIVE_COLOR = sf::Color(249, 223, 91);
+    inline const static sf::Color DEFAULT_CELL_FILL_DEAD_COLOR = sf::Color(55, 10, 77);
+    inline const static sf::Color DEFAULT_CELL_BORDER_DEAD_COLOR = sf::Color(55, 10, 77);
     sf::RectangleShape rectangle;
 public:
+    const static int OUTLINE_THICKNESS = 3;
+
     CellRenderer();
     ~CellRenderer() = default;
     void Update(unsigned int cellSize, unsigned int x, unsigned int y);
-    void Draw(sf::RenderWindow * window) const;
+    void SetAlive();
+    void SetDead();
+    void Draw(sf::RenderWindow * window);
 };
 
 

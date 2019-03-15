@@ -6,15 +6,15 @@
 #include "common/utils/Logger.h"
 #include <math.h>
 
-Board::Board(unsigned int boardWidth, unsigned int boardHeight):boardWidth(boardWidth),boardHeight(boardHeight)
+Board::Board(unsigned int columns, unsigned int rows):columns(columns),rows(rows)
 {
     //Fill the cells matrix
-    for (int row = 0; row < boardHeight; ++row)
+    for (int row = 0; row < rows; ++row)
     {
-        cells.push_back(std::vector<Cell>());
-        for (int col = 0; col < boardWidth; ++col)
+        cells.emplace_back(std::vector<Cell>());
+        for (int col = 0; col < columns; ++col)
         {
-            cells[row].push_back(Cell());
+            cells[row].emplace_back(Cell());
         }
     }
 }

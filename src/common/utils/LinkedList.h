@@ -16,7 +16,7 @@ public:
     struct LinkedListNode
     {
     public:
-        T const *value = nullptr;
+        T *value = nullptr;
         LinkedListNode *next = nullptr;
         LinkedListNode *previous = nullptr;
 
@@ -49,7 +49,7 @@ public:
         last = nullptr;
     }
 
-    LinkedListNode *AddFirst(T const *value)
+    LinkedListNode *AddFirst(T *value)
     {
         LinkedListNode *node = ObtainNode();
 
@@ -70,7 +70,7 @@ public:
         return node;
     }
 
-    LinkedListNode *AddLast(T const *value)
+    LinkedListNode *AddLast(T *value)
     {
         LinkedListNode *node = ObtainNode();
 
@@ -91,7 +91,7 @@ public:
         return node;
     }
 
-    LinkedListNode *AddAfter(LinkedListNode *refNode, T const *value)
+    LinkedListNode *AddAfter(LinkedListNode *refNode, T *value)
     {
         if (nullptr == refNode)
         {
@@ -114,7 +114,7 @@ public:
         return node;
     }
 
-    LinkedListNode *AddBefore(LinkedListNode *refNode, T const *value)
+    LinkedListNode *AddBefore(LinkedListNode *refNode, T *value)
     {
         if (nullptr == refNode)
         {

@@ -50,7 +50,7 @@ int main()
 
         imguiDebugWindowManager.Update();
 
-        window.clear(sf::Color::White);
+        window.clear(sf::Color(55, 10, 77));
         boardRenderer.Render();
         imguiDebugWindowManager.Render();
         window.display();
