@@ -11,14 +11,22 @@
 class Board
 {
 public:
-    Board(unsigned int columns = DEFAULT_BOARD_WIDTH, unsigned int rows = DEFAULT_BOARD_HEIGHT);
     unsigned int columns;
     unsigned int rows;
+
+    Board(unsigned int columns = DEFAULT_BOARD_WIDTH, unsigned int rows = DEFAULT_BOARD_HEIGHT);
+
+    void Init();
+
+    void Update();
 
 private:
     const static unsigned int DEFAULT_BOARD_WIDTH = 80;
     const static unsigned int DEFAULT_BOARD_HEIGHT = 45;
     std::vector<std::vector<Cell>> cells;
+    std::vector<std::vector<Cell>> previousCellsState;
+
+    unsigned int AliveNeighbours(unsigned int row, unsigned int col, std::vector<std::vector<Cell>> &cellsRef);
 };
 
 

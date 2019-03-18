@@ -3,9 +3,9 @@
 //
 
 #include <SFML/Graphics/RectangleShape.hpp>
-#include <random>
 #include "BoardRenderer.h"
 #include "common/utils/Logger.h"
+#include "common/event/EventSystem.h"
 
 BoardRenderer::BoardRenderer(Board *board, sf::RenderWindow *window)
 {
@@ -21,16 +21,19 @@ BoardRenderer::BoardRenderer(Board *board, sf::RenderWindow *window)
 
     CalculateCellSize();
 
+    EventSystem::Instance().AddListener((CellUpdatedEvent::CellUpdatedEventListener *) this);
+
     //TODO: I would like to be able to change the size through a debug menu, listen to events here
 }
 
 void BoardRenderer::Render()
 {
-    LinkedList<CellRenderer>::LinkedListNode *currentCellRenderer = cellRenderers.GetFirst();
-    while (nullptr != currentCellRenderer)
+    for (int row = 0; row < board->rows; ++row)
     {
-        currentCellRenderer->value->Draw(window);
-        currentCellRenderer = currentCellRenderer->next;
+        for (int col = 0; col < board->columns; ++col)
+        {
+            cellRenderers[row][col].Draw(window);
+        }
     }
 }
 
@@ -68,37 +71,34 @@ void BoardRenderer::CalculateCellSize()
         }
     }
 
-    cellRenderers.Clear();
+    cellRenderers.clear();
 
     for (int row = 0; row < board->rows; ++row)
     {
+        cellRenderers.emplace_back(std::vector<CellRenderer>());
         for (int col = 0; col < board->columns; ++col)
         {
-            CellRenderer *cellRenderer = new CellRenderer();
             //size border + size of the cell + thickness if col 0 or reduce the thickness if > 0, so the outlines overlap
-            cellRenderer->Update
+            cellRenderers[row].emplace_back(CellRenderer());
+            cellRenderers[row][col].Update
                     (cellSize,
                      lateralBorder + col * cellSize - ((col - 1) * CellRenderer::OUTLINE_THICKNESS),
                      longitudinalBorder + row * cellSize - ((row - 1) * CellRenderer::OUTLINE_THICKNESS));
-            cellRenderers.AddLast(cellRenderer);
         }
     }
 
-    std::mt19937 m(std::time(NULL));
-    std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+}
 
-    LinkedList<CellRenderer>::LinkedListNode * node = cellRenderers.GetFirst();
-    while (nullptr != node)
+void BoardRenderer::OnCellUpdated(std::shared_ptr<Event> event)
+{
+    CellUpdatedEvent *cellUpdatedEvent = (CellUpdatedEvent *) event.get();
+    if (cellUpdatedEvent->alive)
     {
-        if(dist(m) > 0.66)
-        {
-            node->value->SetAlive();
-        }
-        else
-        {
-            node->value->SetDead();
-        }
-        node = node->next;
+        cellRenderers[cellUpdatedEvent->row][cellUpdatedEvent->col].SetAlive();
+    }
+    else
+    {
+        cellRenderers[cellUpdatedEvent->row][cellUpdatedEvent->col].SetDead();
     }
 }
 

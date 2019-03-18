@@ -20,7 +20,6 @@ void CellRenderer::Update(unsigned int cellSize, unsigned int x, unsigned int y)
     rectangle.setPosition(x, y);
 }
 
-
 void CellRenderer::Draw(sf::RenderWindow *window)
 {
     window->draw(rectangle);

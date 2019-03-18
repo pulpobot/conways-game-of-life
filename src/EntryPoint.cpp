@@ -18,7 +18,7 @@ int main()
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
     sf::RenderWindow window(sf::VideoMode(1280, 720, desktop.bitsPerPixel), "Conway's Game Of Life",
                             sf::Style::Titlebar | sf::Style::Close);
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(10);
 
     WindowEventHandler windowEventHandler(&window);
 
@@ -29,6 +29,7 @@ int main()
 
     Board board;
     BoardRenderer boardRenderer(&board, &window);
+    board.Init();
 
     while (window.isOpen())
     {
@@ -49,8 +50,8 @@ int main()
         }
 
         imguiDebugWindowManager.Update();
-
-        window.clear(sf::Color(55, 10, 77));
+        board.Update();
+        window.clear(sf::Color(35, 0, 57));
         boardRenderer.Render();
         imguiDebugWindowManager.Render();
         window.display();

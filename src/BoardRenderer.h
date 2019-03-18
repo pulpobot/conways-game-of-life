@@ -9,15 +9,16 @@
 #include "Board.h"
 #include "common/utils/LinkedList.h"
 #include "CellRenderer.h"
+#include "events/ConwaysEvents.h"
 
-class BoardRenderer
+class BoardRenderer : public CellUpdatedEvent::CellUpdatedEventListener
 {
 private:
 
 
-    sf::RenderWindow * window;
-    Board * board;
-    LinkedList<CellRenderer> cellRenderers; //TODO: Pool these
+    sf::RenderWindow *window;
+    Board *board;
+    std::vector<std::vector<CellRenderer>> cellRenderers;
 
     bool isLandscape = true;
     int cellSize;
@@ -25,8 +26,11 @@ private:
     int longitudinalBorder = 0;
 
     void CalculateCellSize();
+
 public:
-    BoardRenderer(Board * board, sf::RenderWindow * window);
+    BoardRenderer(Board *board, sf::RenderWindow *window);
+    virtual void OnCellUpdated(std::shared_ptr<Event> event);
+
     void Render();
 };
 

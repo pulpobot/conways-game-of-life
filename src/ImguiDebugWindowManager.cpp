@@ -51,6 +51,6 @@ void ImguiDebugWindowManager::Update()
 
 void ImguiDebugWindowManager::Render()
 {
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
     ImGui::SFML::Render(*window);
 }
